@@ -4,19 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
@@ -25,6 +21,8 @@ import kotlin.coroutines.resume
 
 @ExperimentalPermissionHandlerApi
 class PermissionHandlerHostState(private val permissionList: List<String>) {
+
+    constructor(permission: String) : this(permissionList = listOf(permission))
 
     private val mutex = Mutex()
     internal var currentPermissionHandlerData by mutableStateOf<PermissionHandlerData?>(null)
@@ -53,12 +51,15 @@ class PermissionHandlerHostState(private val permissionList: List<String>) {
         override fun copy(permissionState: PermissionState) =
             PermissionHandlerDataImpl(continuation, permissionList, permissionState)
 
-        override fun grant() {
+        override fun granted() {
             if (continuation.isActive) continuation.resume(PermissionHandlerResult.GRANTED)
         }
 
-        override fun deny() {
-            if (continuation.isActive) continuation.resume(PermissionHandlerResult.DENIED)
+        override fun denied(isNextRationale: Boolean) {
+            if (continuation.isActive) {
+                if (isNextRationale) continuation.resume(PermissionHandlerResult.DENIED_NEXT_RATIONALE)
+                else continuation.resume(PermissionHandlerResult.DENIED)
+            }
         }
 
         override fun equals(other: Any?): Boolean {
@@ -92,9 +93,7 @@ class PermissionHandlerHostState(private val permissionList: List<String>) {
 @Composable
 fun PermissionsHandlerHost(
     hostState: PermissionHandlerHostState,
-    showSnackbar: suspend () -> SnackbarResult,
-    snackbarCoroutineScope: CoroutineScope = rememberCoroutineScope(),
-    rationaleDialog: @Composable (permissionRequest: () -> Unit, dismissRequest: () -> Unit) -> Unit =
+    rationale: @Composable (permissionRequest: () -> Unit, dismissRequest: () -> Unit) -> Unit =
         { permissionRequest, _ -> SideEffect { permissionRequest() } }
 ) {
     val currentPermissionHandlerData = hostState.currentPermissionHandlerData ?: return
@@ -103,37 +102,31 @@ fun PermissionsHandlerHost(
         rememberMultiplePermissionsState(currentPermissionHandlerData.permissionList) { permissionStates ->
             val permissionGranted = permissionStates.values.all { it }
             if (permissionGranted) {
-                currentPermissionHandlerData.grant()
+                currentPermissionHandlerData.granted()
             } else {
-                hostState.updatePermissionState(PermissionState.Denied)
+                hostState.updatePermissionState(PermissionState.Deny)
             }
         }
 
     val coroutineScope = rememberCoroutineScope()
     when (val permissionState = currentPermissionHandlerData.permissionState) {
-        PermissionState.Denied -> {
-            if (!permissionsState.shouldShowRationale) {
-                val context = LocalContext.current
-                SideEffect {
-                    snackbarCoroutineScope.launch {
-                        when (showSnackbar()) {
-                            SnackbarResult.Dismissed -> {} //no-op
-                            SnackbarResult.ActionPerformed -> openAppSettings(context)
-                        }
-                    }
-                }
-            }
-            currentPermissionHandlerData.deny()
-        }
-
+        PermissionState.Deny ->
+            currentPermissionHandlerData.denied(isNextRationale = permissionsState.shouldShowRationale)
         PermissionState.Handle -> {
-            snackbarCoroutineScope.coroutineContext.cancelChildren()
             if (permissionsState.shouldShowRationale) {
-                rationaleDialog(
+                rationale(
                     permissionRequest = {
-                        hostState.updatePermissionState(PermissionState.HideDialog(PermissionState.PermissionAction.Request))
+                        hostState.updatePermissionState(
+                            PermissionState.HideRationale(
+                                PermissionState.PermissionAction.Request
+                            )
+                        )
                     }, dismissRequest = {
-                        hostState.updatePermissionState(PermissionState.HideDialog(PermissionState.PermissionAction.Dismiss))
+                        hostState.updatePermissionState(
+                            PermissionState.HideRationale(
+                                PermissionState.PermissionAction.Dismiss
+                            )
+                        )
                     })
             } else {
                 SideEffect {
@@ -143,9 +136,9 @@ fun PermissionsHandlerHost(
                 }
             }
         }
-        is PermissionState.HideDialog -> {
+        is PermissionState.HideRationale -> {
             if (permissionState.permissionAction == PermissionState.PermissionAction.Dismiss) {
-                currentPermissionHandlerData.deny()
+                currentPermissionHandlerData.denied(isNextRationale = true)
             } else {
                 SideEffect {
                     coroutineScope.launch {
@@ -157,7 +150,7 @@ fun PermissionsHandlerHost(
     }
 }
 
-private fun openAppSettings(context: Context) {
+fun openAppSettings(context: Context) {
     val intent = Intent(
         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
         Uri.fromParts("package", context.packageName, null)
@@ -167,8 +160,8 @@ private fun openAppSettings(context: Context) {
 
 internal sealed class PermissionState {
     object Handle : PermissionState()
-    data class HideDialog(val permissionAction: PermissionAction) : PermissionState()
-    object Denied : PermissionState()
+    data class HideRationale(val permissionAction: PermissionAction) : PermissionState()
+    object Deny : PermissionState()
 
     enum class PermissionAction {
         Request, Dismiss
@@ -179,14 +172,13 @@ internal interface PermissionHandlerData {
     val permissionList: List<String>
     val permissionState: PermissionState
     fun copy(permissionState: PermissionState = this.permissionState): PermissionHandlerData
-    fun grant()
-    fun deny()
+    fun granted()
+    fun denied(isNextRationale: Boolean)
 }
 
 @ExperimentalPermissionHandlerApi
 enum class PermissionHandlerResult {
     DENIED,
+    DENIED_NEXT_RATIONALE,
     GRANTED;
-
-    fun isGranted() = this == GRANTED
 }

@@ -2,6 +2,7 @@ package com.github.dawidraszka.composepermissionhandler.sample
 
 import android.Manifest
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -21,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,10 +32,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.github.composepermissionhandler.ExperimentalPermissionHandlerApi
 import com.github.composepermissionhandler.PermissionHandlerHostState
+import com.github.composepermissionhandler.PermissionHandlerResult
 import com.github.composepermissionhandler.PermissionsHandlerHost
+import com.github.composepermissionhandler.openAppSettings
 import kotlinx.coroutines.launch
 import com.github.dawidraszka.composepermissionhandler.sample.ui.theme.ComposePermissionHandlerTheme
 
@@ -53,18 +58,15 @@ class MainActivity : ComponentActivity() {
 fun SampleScreen() {
     val snackbarHostState = SnackbarHostState()
     val permissionHandlerHostState =
-        PermissionHandlerHostState(permissionList = listOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PermissionHandlerHostState(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            PermissionHandlerHostState(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
 
     PermissionsHandlerHost(
         hostState = permissionHandlerHostState,
-        showSnackbar = {
-            snackbarHostState.showSnackbar(
-                "permission request",
-                "grant",
-                duration = SnackbarDuration.Short
-            )
-        },
-        rationaleDialog = { permissionRequest, dismissRequest ->
+        rationale = { permissionRequest, dismissRequest ->
             AlertDialog(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 onDismissRequest = dismissRequest,
@@ -96,13 +98,25 @@ fun SampleScreen() {
         }
     )
 
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Content(padding, imageUri) {
             coroutineScope.launch {
-                val result = permissionHandlerHostState.handlePermissions()
-                if (result.isGranted()) {
-                    imagePicker.launch("image/*")
+                when(permissionHandlerHostState.handlePermissions()){
+                    PermissionHandlerResult.DENIED -> {
+                        val result = snackbarHostState.showSnackbar(
+                            "App permission denied",
+                            "Settings",
+                            duration = SnackbarDuration.Short
+                        )
+                        when (result) {
+                            SnackbarResult.Dismissed -> {} // noop
+                            SnackbarResult.ActionPerformed -> openAppSettings(context)
+                        }
+                    }
+                    PermissionHandlerResult.GRANTED -> imagePicker.launch("image/*")
+                    PermissionHandlerResult.DENIED_NEXT_RATIONALE -> {} // noop
                 }
             }
         }
@@ -112,7 +126,6 @@ fun SampleScreen() {
 
 @Composable
 fun Content(padding: PaddingValues, imageUri: Uri?, onPermissionHandleClick: () -> Unit) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
