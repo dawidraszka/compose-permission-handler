@@ -99,7 +99,7 @@ fun PermissionsHandlerHost(
 ) {
     val currentPermissionHandlerData = hostState.currentPermissionHandlerData ?: return
 
-    val bluetoothPermissionState =
+    val permissionsState =
         rememberMultiplePermissionsState(currentPermissionHandlerData.permissionList) { permissionStates ->
             val permissionGranted = permissionStates.values.all { it }
             if (permissionGranted) {
@@ -112,7 +112,7 @@ fun PermissionsHandlerHost(
     val coroutineScope = rememberCoroutineScope()
     when (val permissionState = currentPermissionHandlerData.permissionState) {
         PermissionState.Denied -> {
-            if (!bluetoothPermissionState.shouldShowRationale) {
+            if (!permissionsState.shouldShowRationale) {
                 val context = LocalContext.current
                 SideEffect {
                     snackbarCoroutineScope.launch {
@@ -128,7 +128,7 @@ fun PermissionsHandlerHost(
 
         PermissionState.Handle -> {
             snackbarCoroutineScope.coroutineContext.cancelChildren()
-            if (bluetoothPermissionState.shouldShowRationale) {
+            if (permissionsState.shouldShowRationale) {
                 rationaleDialog(
                     permissionRequest = {
                         hostState.updatePermissionState(PermissionState.HideDialog(PermissionState.PermissionAction.Request))
@@ -138,7 +138,7 @@ fun PermissionsHandlerHost(
             } else {
                 SideEffect {
                     coroutineScope.launch {
-                        bluetoothPermissionState.launchMultiplePermissionRequest()
+                        permissionsState.launchMultiplePermissionRequest()
                     }
                 }
             }
@@ -149,7 +149,7 @@ fun PermissionsHandlerHost(
             } else {
                 SideEffect {
                     coroutineScope.launch {
-                        bluetoothPermissionState.launchMultiplePermissionRequest()
+                        permissionsState.launchMultiplePermissionRequest()
                     }
                 }
             }
