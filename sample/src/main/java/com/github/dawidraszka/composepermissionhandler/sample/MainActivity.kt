@@ -34,11 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.github.composepermissionhandler.ExperimentalPermissionHandlerApi
-import com.github.composepermissionhandler.PermissionHandlerHostState
-import com.github.composepermissionhandler.PermissionHandlerResult
-import com.github.composepermissionhandler.PermissionsHandlerHost
-import com.github.composepermissionhandler.openAppSettings
+import com.github.dawidraszka.composepermissionhandler.ExperimentalPermissionHandlerApi
+import com.github.dawidraszka.composepermissionhandler.PermissionHandlerHostState
+import com.github.dawidraszka.composepermissionhandler.PermissionHandlerResult
+import com.github.dawidraszka.composepermissionhandler.PermissionHandlerHost
+import com.github.dawidraszka.composepermissionhandler.openAppSettings
 import kotlinx.coroutines.launch
 import com.github.dawidraszka.composepermissionhandler.sample.ui.theme.ComposePermissionHandlerTheme
 
@@ -64,7 +64,7 @@ fun SampleScreen() {
             PermissionHandlerHostState(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-    PermissionsHandlerHost(
+    PermissionHandlerHost(
         hostState = permissionHandlerHostState,
         rationale = { permissionRequest, dismissRequest ->
             AlertDialog(
@@ -103,6 +103,7 @@ fun SampleScreen() {
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Content(padding, imageUri) {
             coroutineScope.launch {
+                snackbarHostState.currentSnackbarData?.dismiss()
                 when(permissionHandlerHostState.handlePermissions()){
                     PermissionHandlerResult.DENIED -> {
                         val result = snackbarHostState.showSnackbar(
@@ -122,7 +123,6 @@ fun SampleScreen() {
         }
     }
 }
-
 
 @Composable
 fun Content(padding: PaddingValues, imageUri: Uri?, onPermissionHandleClick: () -> Unit) {
