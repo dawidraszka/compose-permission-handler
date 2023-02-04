@@ -1,5 +1,5 @@
 ## ComposePermissionHandler
-### Runtime permissions in Compose made simple
+### Runtime permissions in Jetpack Compose made simple
 
 ComposePermissionHandler is a library that helps to implement runtime permission handling in [Jetpack Compose](https://developer.android.com/jetpack/compose) using [Accompanist](https://github.com/google/accompanist) and its [Jetpack Compose Permissions](https://github.com/google/accompanist/tree/main/permissions).
 It's main purpose is to make permissions handling more concise.
