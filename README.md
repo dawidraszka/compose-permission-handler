@@ -217,4 +217,17 @@ fun SampleScreen() {
 }
 ```
 
-Of course, some things can (and should) be abstracted away (like the dialog used as rationale), to make it even cleaner!
+The code can be simplified even further with [utils package](https://github.com/dawidraszka/compose-permission-handler/tree/main/utils):
+```kotlin
+when (permissionHandlerHostState.handlePermissions()) {
+    PermissionHandlerResult.GRANTED -> { /* Do your action */ }
+    PermissionHandlerResult.DENIED -> {
+        snackbarHostState.showAppSettingsSnackbar(
+            message = "App permission denied",
+            openSettingsActionLabel = "Settings",
+            context = context
+        )
+    }
+    PermissionHandlerResult.DENIED_NEXT_RATIONALE -> {}
+}
+```
