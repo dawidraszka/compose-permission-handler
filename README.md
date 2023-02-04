@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/dawidraszka/compose-permission-handler.svg)](https://jitpack.io/#dawidraszka/compose-permission-handler)
+
 ## ComposePermissionHandler
 ### Runtime permissions in Jetpack Compose made simple
 
@@ -246,4 +248,4 @@ when (permissionHandlerHostState.handlePermissions()) {
 ```
 
 ### Final note
-Shoutout to [@tomczyn](https://github.com/tomczyn) and his [article](https://easycontext.io/automatic-app-versioning-the-easy-way/) about app versioning which helped me setting up versioning for this library!
+Shout out to [@tomczyn](https://github.com/tomczyn) and his [article](https://easycontext.io/automatic-app-versioning-the-easy-way/) about app versioning which helped me setting up versioning for this library!
