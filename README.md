@@ -5,7 +5,20 @@ ComposePermissionHandler is a library that helps to implement runtime permission
 It's main purpose is to make permissions handling more concise.
 
 ### Declaring dependency
-To be added soon!
+Add `jitpack` to your repositories:
+```
+repositories {
+    maven("https://jitpack.io")
+}
+```
+Add the dependency:
+```kotlin
+dependencies {
+    implementation("com.github.dawidraszka.compose-permission-handler:core:1.0.0")
+    // Only required if you want to use utils package
+    implementation("com.github.dawidraszka.compose-permission-handler:utils:1.0.0")
+}
+```
 
 ### How to use it
 1. Inside your `@Composable` function create `PermissionHandlerHostState` and `PermissionHandlerHost`:
@@ -231,3 +244,6 @@ when (permissionHandlerHostState.handlePermissions()) {
     PermissionHandlerResult.DENIED_NEXT_RATIONALE -> {}
 }
 ```
+
+### Final note
+Shoutout to [@tomczyn](https://github.com/tomczyn) and his [article](https://easycontext.io/automatic-app-versioning-the-easy-way/) about app versioning which helped me setting up versioning for this library!
