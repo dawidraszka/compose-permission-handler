@@ -19,10 +19,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,13 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.dawidraszka.composepermissionhandler.ExperimentalPermissionHandlerApi
-import com.dawidraszka.composepermissionhandler.PermissionHandlerHostState
-import com.dawidraszka.composepermissionhandler.PermissionHandlerResult
-import com.dawidraszka.composepermissionhandler.PermissionHandlerHost
-import com.dawidraszka.composepermissionhandler.openAppSettings
+import com.dawidraszka.composepermissionhandler.core.ExperimentalPermissionHandlerApi
+import com.dawidraszka.composepermissionhandler.core.PermissionHandlerHostState
+import com.dawidraszka.composepermissionhandler.core.PermissionHandlerResult
+import com.dawidraszka.composepermissionhandler.core.PermissionHandlerHost
 import kotlinx.coroutines.launch
 import com.dawidraszka.composepermissionhandler.sample.ui.theme.ComposePermissionHandlerTheme
+import com.dawidraszka.composepermissionhandler.utils.showAppSettingsSnackbar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,15 +104,11 @@ fun SampleScreen() {
                 snackbarHostState.currentSnackbarData?.dismiss()
                 when (permissionHandlerHostState.handlePermissions()) {
                     PermissionHandlerResult.DENIED -> {
-                        val result = snackbarHostState.showSnackbar(
-                            "App permission denied",
-                            "Settings",
-                            duration = SnackbarDuration.Short
+                        snackbarHostState.showAppSettingsSnackbar(
+                            message = "App permission denied",
+                            openSettingsActionLabel = "Settings",
+                            context = context
                         )
-                        when (result) {
-                            SnackbarResult.Dismissed -> {} // noop
-                            SnackbarResult.ActionPerformed -> openAppSettings(context)
-                        }
                     }
                     PermissionHandlerResult.GRANTED -> imagePicker.launch("image/*")
                     PermissionHandlerResult.DENIED_NEXT_RATIONALE -> {} // noop

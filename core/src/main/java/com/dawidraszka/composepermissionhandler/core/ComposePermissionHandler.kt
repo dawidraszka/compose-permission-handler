@@ -1,9 +1,5 @@
-package com.dawidraszka.composepermissionhandler
+package com.dawidraszka.composepermissionhandler.core
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.compose.material3.Snackbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -247,23 +243,4 @@ internal interface PermissionHandlerData {
     fun copy(permissionState: PermissionState = this.permissionState): PermissionHandlerData
     fun granted()
     fun denied(isNextRationale: Boolean)
-}
-
-/**
- * Helper function to open app settings. It might be useful to call when
- * [PermissionHandlerHostState.handlePermissions] returns [PermissionHandlerResult.DENIED]. It
- * might be a good idea to use this function as [Snackbar] action or on any other way of communicating
- * with user.
- *
- * @sample com.dawidraszka.composepermissionhandler.sample.SampleScreen
- *
- * @param context activity context, obtained for instance, by calling
- * [androidx.compose.ui.platform.LocalContext]
- */
-fun openAppSettings(context: Context) {
-    val intent = Intent(
-        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        Uri.fromParts("package", context.packageName, null)
-    )
-    context.startActivity(intent)
 }

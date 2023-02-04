@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":utils"))
     kotlin()
     baseAndroid()
     compose()

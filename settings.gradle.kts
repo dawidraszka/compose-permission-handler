@@ -10,3 +10,4 @@ rootProject.name = "ComposePermissionHandler"
 
 include(":sample")
 include(":core")
+include(":utils")
