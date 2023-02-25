@@ -11,7 +11,7 @@ object Libs {
         const val appCompat = "androidx.appcompat:appcompat:${Versions.appCompat}"
 
         object Compose {
-            const val material = "androidx.compose.material3:material3:${Versions.material3}"
+            const val material3 = "androidx.compose.material3:material3:${Versions.material3}"
             const val activity = "androidx.activity:activity-compose:${Versions.composeActivity}"
         }
     }

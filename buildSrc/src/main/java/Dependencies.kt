@@ -10,7 +10,7 @@ fun DependencyHandler.baseAndroid() {
 }
 
 fun DependencyHandler.compose() {
-    implementation(Libs.AndroidX.Compose.material)
+    implementation(Libs.AndroidX.Compose.material3)
     implementation(Libs.AndroidX.Compose.activity)
 }
 

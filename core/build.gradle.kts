@@ -11,8 +11,6 @@ android {
 }
 
 dependencies {
-    implementation(Libs.Jetbrains.kotlinStdlib)
-    implementation(Libs.AndroidX.appCompat)
     implementation(Libs.Google.Accompanist.permissions)
-    implementation(Libs.AndroidX.Compose.material)
+    implementation(Libs.AndroidX.Compose.material3)
 }
