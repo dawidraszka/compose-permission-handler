@@ -1,15 +1,15 @@
 package com.dawidraszka.composepermissionhandler.core
 
-import androidx.compose.material3.Snackbar
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -57,9 +57,9 @@ class PermissionHandlerHostState(private val permissionList: List<String>) {
      * @return [PermissionHandlerResult.GRANTED] if permissions were granted.
      * [PermissionHandlerResult.DENIED] if permissions have been denied (because dialog was closed,
      * user clicked deny or dialog wasn't displayed by the Android system). Usually, we might want
-     * to communicate this result to user (for instance, via [Snackbar]).
+     * to communicate this result to user (for instance, via Snackbar).
      * [PermissionHandlerResult.DENIED_NEXT_RATIONALE] if permissions have been denied, but next
-     * request will have [MultiplePermissionsState.shouldShowRationale] = true.
+     * request will have [Activity.shouldShowRationale] = true.
      * In this case, we're sure there will be one more opportunity to show permission request
      * dialog. Usually, we don't want to do anything here.
      */
@@ -127,8 +127,7 @@ class PermissionHandlerHostState(private val permissionList: List<String>) {
 /**
  * Host for permission requests to be handled based on [hostState].
  *
- * By default, this function doesn't show anything on rationale and just calls
- * [MultiplePermissionsState.launchMultiplePermissionRequest].
+ * By default, this function doesn't show anything on rationale and just calls permission request.
  *
  * If you want to customize rationale you can pass your own Composable. It will have access to
  * permissionRequest and dismissRequest callbacks.
@@ -136,10 +135,9 @@ class PermissionHandlerHostState(private val permissionList: List<String>) {
  * @sample com.dawidraszka.composepermissionhandler.sample.SampleScreen
  *
  * @param hostState state of this component to handle permissions requests properly.
- * @param rationale Composable to display when [MultiplePermissionsState.shouldShowRationale] = true.
+ * @param rationale Composable to display when [Activity.shouldShowRationale] = true.
  */
 @ExperimentalPermissionHandlerApi
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionHandlerHost(
     hostState: PermissionHandlerHostState,
@@ -148,10 +146,12 @@ fun PermissionHandlerHost(
 ) {
     val currentPermissionHandlerData = hostState.currentPermissionHandlerData ?: return
 
-    val permissionsState =
-        rememberMultiplePermissionsState(currentPermissionHandlerData.permissionList) { permissionStates ->
-            val permissionGranted = permissionStates.values.all { it }
-            if (permissionGranted) {
+    val launcher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissionsResult ->
+            val permissionsGranted = permissionsResult.values.all { it }
+            if (permissionsGranted) {
                 currentPermissionHandlerData.granted()
             } else {
                 hostState.updatePermissionState(PermissionState.Deny)
@@ -159,11 +159,15 @@ fun PermissionHandlerHost(
         }
 
     val coroutineScope = rememberCoroutineScope()
+    val activity = LocalContext.current.findActivity()
+
     when (val permissionState = currentPermissionHandlerData.permissionState) {
         PermissionState.Deny ->
-            currentPermissionHandlerData.denied(isNextRationale = permissionsState.shouldShowRationale)
+            currentPermissionHandlerData.denied(
+                isNextRationale = activity.shouldShowRationale(currentPermissionHandlerData.permissionList)
+            )
         PermissionState.Handle -> {
-            if (permissionsState.shouldShowRationale) {
+            if (activity.shouldShowRationale(currentPermissionHandlerData.permissionList)) {
                 rationale(
                     permissionRequest = {
                         hostState.updatePermissionState(
@@ -182,7 +186,7 @@ fun PermissionHandlerHost(
             } else {
                 SideEffect {
                     coroutineScope.launch {
-                        permissionsState.launchMultiplePermissionRequest()
+                        launcher.launch(currentPermissionHandlerData.permissionList.toTypedArray())
                     }
                 }
             }
@@ -193,7 +197,7 @@ fun PermissionHandlerHost(
             } else {
                 SideEffect {
                     coroutineScope.launch {
-                        permissionsState.launchMultiplePermissionRequest()
+                        launcher.launch(currentPermissionHandlerData.permissionList.toTypedArray())
                     }
                 }
             }
@@ -214,13 +218,13 @@ enum class PermissionHandlerResult {
     /**
      * Permissions have been denied - because dialog was closed, user clicked deny or dialog wasn't
      * displayed by the Android system). Usually, we might want to communicate this result to user
-     * (for instance, via [Snackbar]).
+     * (for instance, via Snackbar).
      */
     DENIED,
 
     /**
      * Permissions have been denied, but next request will have
-     * [MultiplePermissionsState.shouldShowRationale] = true.
+     * [Activity.shouldShowRationale] = true.
      * In this case, we're sure there will be one more opportunity to show permission request
      * dialog. Usually, we don't want to do anything with this result.
      */

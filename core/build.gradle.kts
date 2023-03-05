@@ -11,6 +11,6 @@ android {
 }
 
 dependencies {
-    implementation(Libs.Google.Accompanist.permissions)
-    implementation(Libs.AndroidX.Compose.material3)
+    implementation(Libs.AndroidX.Compose.ui)
+    implementation(Libs.AndroidX.Compose.activity)
 }
