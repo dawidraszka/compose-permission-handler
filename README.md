@@ -12,6 +12,7 @@ There are multiple version currently being released, depending on [Compose UI ve
 |  Compose UI 1.0 (1.0.x)   |                  1.1.0                  |
 |  Compose UI 1.1 (1.1.x)   |                  1.2.0                  |
 |  Compose UI 1.2 (1.2.x)   |                  1.3.0                  |
+|  Compose UI 1.3 (1.3.x)   |                  1.4.0                  |
 
 <b>Version 1.0.0 is legacy and should not be used as it may cause compatibility problems!</b>
 
