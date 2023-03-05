@@ -1,5 +1,3 @@
-[![](https://jitpack.io/v/dawidraszka/compose-permission-handler.svg)](https://jitpack.io/#dawidraszka/compose-permission-handler)
-
 ## ComposePermissionHandler
 ### Runtime permissions in Jetpack Compose made simple
 
