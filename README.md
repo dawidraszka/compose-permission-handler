@@ -5,15 +5,11 @@ ComposePermissionHandler is a library that helps to implement runtime permission
 It's main purpose is to make permissions handling more concise.
 
 ### Versioning
-There are multiple version currently being released, depending on [Compose UI version](https://developer.android.com/jetpack/androidx/releases/compose-ui) used in your project:  
-<table>
- <tr>
-  <td><b>Compose UI version</b></td><td><b>ComposePermissionHandler version</b></td>
- </tr>
- <tr>
-  <td>Compose UI 1.0 (1.0.x)</td><td>1.1.0</td>
- </tr>
-</table>
+There are multiple version currently being released, depending on [Compose UI version](https://developer.android.com/jetpack/androidx/releases/compose-ui) used in your project:
+
+| <b>Compose UI version</b> | <b>ComposePermissionHandler version</b> |
+|:-------------------------:|:---------------------------------------:|
+|  Compose UI 1.0 (1.0.x)   |                  1.1.0                  |
 
 ### Declaring dependency
 Add `jitpack` to your repositories:
