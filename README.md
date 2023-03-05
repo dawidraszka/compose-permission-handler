@@ -11,6 +11,8 @@ There are multiple version currently being released, depending on [Compose UI ve
 |:-------------------------:|:---------------------------------------:|
 |  Compose UI 1.0 (1.0.x)   |                  1.1.0                  |
 
+<b>Version 1.0.0 is legacy and should not be used as it may cause compatibility problems!</b>
+
 ### Declaring dependency
 Add `jitpack` to your repositories:
 ```
