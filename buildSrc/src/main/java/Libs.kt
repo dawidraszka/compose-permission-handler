@@ -3,7 +3,6 @@ object Libs {
     object Plugins {
         const val buildGradle = "com.android.tools.build:gradle:${Versions.gradle}"
         const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-        const val ktlintGradle = "org.jlleitschuh.gradle:ktlint-gradle:${Versions.ktlint}"
     }
 
     object AndroidX {
@@ -13,12 +12,7 @@ object Libs {
         object Compose {
             const val material3 = "androidx.compose.material3:material3:${Versions.material3}"
             const val activity = "androidx.activity:activity-compose:${Versions.composeActivity}"
-        }
-    }
-
-    object Google {
-        object Accompanist {
-            const val permissions = "com.google.accompanist:accompanist-permissions:${Versions.accompanistPermissions}"
+            const val ui = "androidx.compose.ui:ui:${Versions.compose}"
         }
     }
 
