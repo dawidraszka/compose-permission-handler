@@ -21,9 +21,9 @@ repositories {
 Add the dependency:
 ```kotlin
 dependencies {
-    implementation("com.github.dawidraszka.compose-permission-handler:core:1.0.0")
+    implementation("com.github.dawidraszka.compose-permission-handler:core:[Version]")
     // Only required if you want to use utils package
-    implementation("com.github.dawidraszka.compose-permission-handler:utils:1.0.0")
+    implementation("com.github.dawidraszka.compose-permission-handler:utils:[Version]")
 }
 ```
 
