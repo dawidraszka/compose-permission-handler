@@ -63,7 +63,7 @@ Button(onClick = {
 }
 ```
 
-For more detailed usage please head over to [sample](https://github.com/dawidraszka/compose-permission-handler/tree/main/sample) or [source code with documentation](https://github.com/dawidraszka/compose-permission-handler/blob/main/core/src/main/java/com/dawidraszka/composepermissionhandler/ComposePermissionHandler.kt)!
+For more detailed usage please head over to [sample](https://github.com/dawidraszka/compose-permission-handler/tree/main/sample) or [source code with documentation](https://github.com/dawidraszka/compose-permission-handler/blob/main/core/src/main/java/com/dawidraszka/composepermissionhandler/core/ComposePermissionHandler.kt)!
 
 ### Comparison to a more standard approach
 Imagine a case in which you want to perform an action on button click. This action requires some permissions, so they have to be handled. You want to follow Google's footsteps and you want to create a flow similar to the one in [Google Maps app](ttps://play.google.com/store/apps/details?id=com.google.android.apps.maps). That means showing a snackbar if permissions have been denied (for any reason), unless there's a rationale to be shown in which case, you want to show a dialog. The snackbar should have an action to quickly send the user to settings. Here's how you might implement in classic way:
