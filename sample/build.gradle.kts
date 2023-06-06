@@ -5,6 +5,7 @@ plugins {
 android {
     buildFeatures.compose = true
     composeOptions.kotlinCompilerExtensionVersion = Versions.composeCompiler
+    namespace = "com.dawidraszka.composepermissionhandler.sample"
 }
 
 dependencies {
