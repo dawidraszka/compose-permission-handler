@@ -24,5 +24,5 @@ repositories {
 dependencies {
     compileOnly(gradleApi())
     implementation("com.android.tools.build:gradle:8.0.2")
-    implementation(kotlin("gradle-plugin", "1.8.10"))
+    implementation(kotlin("gradle-plugin", "1.8.21"))
 }
