@@ -7,13 +7,14 @@ It's main purpose is to make permissions handling more concise.
 ### Versioning
 There are multiple version currently being released, depending on [Compose UI version](https://developer.android.com/jetpack/androidx/releases/compose-ui) used in your project:
 
-| <b>Compose UI version</b> | <b>ComposePermissionHandler version</b> |
-|:-------------------------:|:---------------------------------------:|
-|  Compose UI 1.0 (1.0.x)   |                  1.1.0                  |
-|  Compose UI 1.1 (1.1.x)   |                  1.2.0                  |
-|  Compose UI 1.2 (1.2.x)   |                  1.3.0                  |
-|  Compose UI 1.3 (1.3.x)   |                  1.4.0                  |
-|  Compose UI 1.4 (1.4.x)   |                  1.5.3                  |
+|  <b>Compose UI version</b>  | <b>ComposePermissionHandler version</b> |
+|:---------------------------:|:---------------------------------------:|
+|   Compose UI 1.0 (1.0.x)    |                  1.1.0                  |
+|   Compose UI 1.1 (1.1.x)    |                  1.2.0                  |
+|   Compose UI 1.2 (1.2.x)    |                  1.3.0                  |
+|   Compose UI 1.3 (1.3.x)    |                  1.4.0                  |
+|   Compose UI 1.4 (1.4.x)    |                  1.5.3                  |
+| Compose UI 1.5 (1.5.x-beta) |               1.6.0-beta                |
 
 <b>Version 1.0.0 is legacy and should not be used as it may cause compatibility problems!</b>
 
