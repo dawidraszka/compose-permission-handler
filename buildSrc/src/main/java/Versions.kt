@@ -1,6 +1,5 @@
 object Versions {
-    const val kotlin = "1.8.10"
-    const val gradle = "7.4.1"
+    const val kotlin = "1.8.20"
     const val detekt = "1.22.0"
     const val ktx = "1.8.0"
     const val appCompat = "1.5.0"

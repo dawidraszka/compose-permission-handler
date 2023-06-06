@@ -8,6 +8,7 @@ publishComposePermissionHandler("core")
 android {
     buildFeatures.compose = true
     composeOptions.kotlinCompilerExtensionVersion = Versions.composeCompiler
+    namespace = "com.dawidraszka.composepermissionhandler.core"
 }
 
 dependencies {
